@@ -1,0 +1,57 @@
+.header_menu {
+    height: 112px;
+    clear: both;
+    margin-top: 0px;
+    z-index: 1;
+}
+
+.gloval_navi li {
+    display: flex;
+    position: relative;
+}
+
+.gloval_navi li:ship1_teams_dropdown {
+    border-left: 1px solid #0071b9;
+}
+
+.header_menu ul {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    margin-left: -10px;
+}
+
+.header_menu ul li {
+    display: inline;
+    margin-left: 10px;
+}
+
+.ship1_teams {
+    cursor: pointer;
+}
+
+.ship1_teams_dropdown {
+    overflow: hidden;
+    position: absolute;
+    left: 0px;
+    top: 2em;
+    width: 100%;
+    min-height: 0px;
+    height: 0px;
+    z-index: 3;
+    margin-top: 5px;
+    transition: min-height 0.5s;
+}
+
+.ship1_teams_dropdown li {
+    display: inline-block;
+    margin: 10px 0px;
+}
+
+.ship1_teams li a:hover {
+    opacity: 1;
+}
+
+.ship1_teams_dropdown.active {
+    min-height: 50px;
+}
