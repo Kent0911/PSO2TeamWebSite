@@ -5,4 +5,13 @@
 
 .members {
     text-align: center;
+    flex-wrap: wrap;
+    padding-left: 5%;
+    padding-right: 5%;
+}
+
+.member_list li {
+    display: inline-block;
+    position: relative;
+    padding: 5px;
 }
