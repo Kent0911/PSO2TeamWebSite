@@ -92,8 +92,17 @@ $().ready(() => {
 // 画像処理
 // 
 //-------------------------------------------------------------------------------------------------------
+// 定数
+const WIDTH = 0;
+const HEIGHT = 1;
+
+// 変数
 let app = Object;
-const textures = [];
+let container = Object;
+let icon = Object;
+let graphics = Object;
+let container_pivot = [0, 0];
+const memberSS = [];
 
 function setUpPixi() {
     const pixi = new PIXI.Application({
@@ -109,30 +118,84 @@ function setUpPixi() {
 }
 
 function loadImgs(_path) {
-    const texture = PIXI.Texture.from(_path);
+    const texture = new PIXI.Texture.from(_path);
     return texture;
 }
 
-function displayImg() {
-    const container = new PIXI.Container();
-    app.stage.addChild(container);
-
+function setUpImg() {
     const img = loadImgs(members[1].getImgSrc());
     const tex = new PIXI.Sprite(img);
-    container.addChild(tex);
+    tex.scale.x = 0.4;
+    tex.scale.y = 0.4;
+    tex.anchor.set(0.5);
+    memberSS.push(tex);
+    app.stage.addChild(tex);
+}
 
-    container.x = app.screen.width / 2;
-    container.y = app.screen.height / 2;
+function createMask() {
+    container = new PIXI.Container();
+    app.stage.addChild(container);
+
+    icon = loadImgs(members[1].getIconSrc());
+
+    graphics = new PIXI.Graphics()
+    .beginTextureFill({icon})
+    .lineStyle(2, 0x00ffff)
+    .moveTo(- app.renderer.width / 2 - 1, - app.renderer.height * 1.1 - 1)
+    .lineTo(- app.renderer.width / 2 - 1, - app.renderer.height * 0.95)
+    .lineTo(app.renderer.width / 2 + 1, - app.renderer.height * 0.65)
+    .lineTo(app.renderer.width / 2 + 1, - app.renderer.height * 1.1 - 1)
+    .lineTo(- app.renderer.width / 2 - 1, -app.renderer.height * 1.1 - 1)
+    .closePath()
+    .endFill();
+
+    container.addChild(graphics);
+}
+
+function resizeMask() {
+    container.children.forEach((_element) => {
+        if (_element == graphics) container.removeChild(graphics);
+    });
+
+    graphics = new PIXI.Graphics()
+    .beginTextureFill({icon})
+    .lineStyle(2, 0x00ffff)
+    .moveTo(- app.renderer.width / 2 - 1, - app.renderer.height * 1.1 - 1)
+    .lineTo(- app.renderer.width / 2 - 1, - app.renderer.height * 0.95)
+    .lineTo(app.renderer.width / 2 + 1, - app.renderer.height * 0.65)
+    .lineTo(app.renderer.width / 2 + 1, - app.renderer.height * 1.1 - 1)
+    .lineTo(- app.renderer.width / 2 - 1, -app.renderer.height * 1.1 - 1)
+    .closePath()
+    .endFill();
+
+    container.addChild(graphics);
+}
+
+function setPosition(_target, _x, _y) {
+    _target.x = _x;
+    _target.y = _y;
+}
+
+function setPivot(_target, _x, _y) {
+    _target.pivot.x = _x;
+    _target.pivot.y = _y;
+}
+
+function displayImg() {
+    setPivot(app.stage,- app.renderer.width * 0.5, - app.renderer.height * 1.1);
+    resizeMask();
 }
 
 window.onload = (() => {
     setUpPixi();
-
-    displayImg();
+    setUpImg();
+    createMask();
 })
 
 $(window).on("load resize", () => {
-    app.renderer.resize(window.innerWidth - 16, 450);
+    app.renderer.resize(window.innerWidth * 0.35, window.innerHeight * 0.6);
     document.getElementById("pixiView").appendChild(app.view);
+
+    displayImg();
 })
 
