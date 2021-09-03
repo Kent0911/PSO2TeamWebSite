@@ -1,9 +1,9 @@
 // メンバー一覧
-const member_list = {
+const member_names = {
     "HexMyria"  : "Stella",
     "Kuroto17"  : "シルヴィア",
     "鮮血解体"   : "鮮血解体",
-    'miriaku'   : "カレン・オリヴィア",
+    "miriaku"   : "カレン・オリヴィア",
     "ロメーダ"   : "ロメーダ",
     "雪月夜　煌" : "カナリア",
     "暁の世界"   : "Reina",
@@ -12,7 +12,7 @@ const member_list = {
     "揮発性檸檬水" : "檸檬水",
     "KATH-TOR" : "かっちゃん",
     "ショウ＝クロー" : "月夜",
-    "紅月レイ" : "ソフィ",
+    // "紅月レイ" : "ソフィ",
     "UJYOMO" : "ujyomo",
     "J'neruko" : "neruko",
     "RhymeSour." : "Rhyme",
@@ -27,7 +27,8 @@ const member_list = {
     "イパルプア" : "イパルプア",
     "C.Rusticana" : "Cavalleria",
     "vlgil" : "粉ミルク",
-    "かぷりっちおさん" : "Capricio"
+    "かぷりっちおさん" : "Capricio",
+    "Moonwuzy" : "Dorogi"
 };
 
 // 変数
@@ -70,7 +71,7 @@ function changeToArray(_map) {
 
 function setUpTexts() {
     const str = [];
-    str.push('<ul class="member_list">');
+    str.push('<ul class="member_list" onClick="clickedName(event)">');
     members.forEach((_element) => {
         str.push('<li>' + _element.name + '</li>');
     });
@@ -84,7 +85,7 @@ function changeText(_target, _array) {
 
 // HTMLが読み込まれた時点で実行(画像を待たない)
 $().ready(() => {
-    changeToArray(member_list);
+    changeToArray(member_names);
     changeText(document.getElementById("members"), setUpTexts());
 })
 
@@ -92,24 +93,24 @@ $().ready(() => {
 // 画像処理
 // 
 //-------------------------------------------------------------------------------------------------------
-// 定数
-const WIDTH = 0;
-const HEIGHT = 1;
+const texture_info = {
+    // id : [anchor.x, anchor.y, image.scale, translate.x, translate.y]
+    "Kuroto17" : [0.5, 0.43, 0.4, 0, 360]
+};
 
 // 変数
 let app = Object;
 let container = Object;
 let icon = Object;
 let graphics = Object;
-let container_pivot = [0, 0];
-const memberSS = [];
+const member_SS = [];
 
 function setUpPixi() {
     const pixi = new PIXI.Application({
         width : 400,
         height : 400,
         antialias : true,
-        backgroundColor : 0x1099bb,
+        backgroundColor : 0xffffff,
         resolution : window.devicePixcelRatio || 1,
     });
     
@@ -117,30 +118,44 @@ function setUpPixi() {
     document.getElementById("pixiView").appendChild(app.view);
 }
 
-function loadImgs(_path) {
-    const texture = new PIXI.Texture.from(_path);
-    return texture;
-}
-
-function setUpImg() {
-    const img = loadImgs(members[1].getImgSrc());
+function setUpImg(_id) {
+    const img = loadImgs(members[_id].getImgSrc());
     const tex = new PIXI.Sprite(img);
+    tex.anchor.set(0.5, 0.43);
     tex.scale.x = 0.4;
     tex.scale.y = 0.4;
-    tex.anchor.set(0.5);
-    memberSS.push(tex);
+    member_SS.push(tex);
     app.stage.addChild(tex);
 }
 
-function createMask() {
+function setUpMask(_id) {
     container = new PIXI.Container();
     app.stage.addChild(container);
+    
+    icon = new PIXI.Sprite(loadImgs(members[_id].getIconSrc()));
+    iconMask(container);
+}
 
-    icon = loadImgs(members[1].getIconSrc());
+function fileCheck(_path) {
+    const xhr = new XMLHttpRequest();
+    xhr.open("HEAD", _path, false);
+    xhr.send(null);
+    return xhr.status;
+}
 
+function loadImgs(_path) {
+    const texture = (fileCheck(_path) == 200 ? new PIXI.Texture.from(_path) : new PIXI.Texture.from("resources/no_image.png"));
+    return texture;
+}
+
+function iconMask(_container) {
+    const scale = 0.2;
     graphics = new PIXI.Graphics()
-    .beginTextureFill({icon})
-    .lineStyle(2, 0x00ffff)
+    .beginTextureFill({
+        texture: icon.texture,
+        matrix: new PIXI.Matrix(scale, 0, 0, scale, (icon.width * scale) / 2, (icon.height * scale) / 2 + 360)
+    })
+    .lineStyle(2, 0x000000)
     .moveTo(- app.renderer.width / 2 - 1, - app.renderer.height * 1.1 - 1)
     .lineTo(- app.renderer.width / 2 - 1, - app.renderer.height * 0.95)
     .lineTo(app.renderer.width / 2 + 1, - app.renderer.height * 0.65)
@@ -149,31 +164,14 @@ function createMask() {
     .closePath()
     .endFill();
 
-    container.addChild(graphics);
+    _container.addChild(graphics);
 }
 
 function resizeMask() {
     container.children.forEach((_element) => {
         if (_element == graphics) container.removeChild(graphics);
     });
-
-    graphics = new PIXI.Graphics()
-    .beginTextureFill({icon})
-    .lineStyle(2, 0x00ffff)
-    .moveTo(- app.renderer.width / 2 - 1, - app.renderer.height * 1.1 - 1)
-    .lineTo(- app.renderer.width / 2 - 1, - app.renderer.height * 0.95)
-    .lineTo(app.renderer.width / 2 + 1, - app.renderer.height * 0.65)
-    .lineTo(app.renderer.width / 2 + 1, - app.renderer.height * 1.1 - 1)
-    .lineTo(- app.renderer.width / 2 - 1, -app.renderer.height * 1.1 - 1)
-    .closePath()
-    .endFill();
-
-    container.addChild(graphics);
-}
-
-function setPosition(_target, _x, _y) {
-    _target.x = _x;
-    _target.y = _y;
+    iconMask(container);
 }
 
 function setPivot(_target, _x, _y) {
@@ -186,16 +184,29 @@ function displayImg() {
     resizeMask();
 }
 
-window.onload = (() => {
+function clickedName(event) {
+    const li = event.target.parentNode.querySelectorAll("li");
+    const number = Array.prototype.indexOf.call(li, event.target);
+
+    setUpImg(number);
+    setUpMask(number);
+}
+
+// HTMLが読み込まれた時点で実行(画像を待たない)
+$().ready(() => {
     setUpPixi();
-    setUpImg();
-    createMask();
+    setUpImg(0);
+    setUpMask(0);
 })
 
 $(window).on("load resize", () => {
-    app.renderer.resize(window.innerWidth * 0.35, window.innerHeight * 0.6);
-    document.getElementById("pixiView").appendChild(app.view);
+    if (navigator.userAgent.match(/iPhone | Android. + Mobile/)){
 
-    displayImg();
+    } else {
+        app.renderer.resize(window.innerWidth * 0.35, window.innerHeight * 0.6);
+        document.getElementById("pixiView").appendChild(app.view);
+    
+        displayImg();
+    }
 })
 
