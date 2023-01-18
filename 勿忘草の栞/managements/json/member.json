@@ -1,0 +1,23 @@
+{
+    "team_master" : [ "ユエリア" ],
+    "manager" : [ "おんにきーる", "" ],
+    "common_member" : [ "", "", ""],
+
+    "info" : {
+        "ユエリア" : {
+            "img_src" : "",
+            "charactar_name" : "ユエリア",
+            "player_id" : "ユエリア",
+            "title" : "ベンチマスター",
+            "class" : "Te",
+            "comment" : "",
+            "twitter" : "@",
+            "youtube" : "",
+            "questions" : []
+        },
+
+        "おんにきーる" : {
+
+        }
+    }
+}
